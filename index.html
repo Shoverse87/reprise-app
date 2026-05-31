@@ -1,164 +1,293 @@
 <!DOCTYPE html>
-  <html lang="en">
-  <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RepRise</title>
-  <style>
-  *{box-sizing:border-box;margin:0;padding:0}
-  body{background:#141414;font-family:system-ui,sans-serif;color:#fff;padding:20px 20px 100px}
-  .app-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
-  .app-icon{width:38px;height:38px;background:#2ECC71;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;colo
-  r:#0a2e18}
-  .app-name{font-size:16px;font-weight:700;color:#fff}
-  .greeting{font-size:24px;font-weight:700;color:#fff;margin-bottom:3px}
-  .greeting span{color:#2ECC71}
-  .date-text{font-size:13px;color:#666;margin-bottom:14px}
-  .week-badge{display:inline-flex;align-items:center;gap:6px;background:#1a2e1f;border:1px solid #2ECC71;border-radius:20px;padding:5px 14px;margin-bottom:10px}
-  .week-text{font-size:12px;color:#2ECC71;font-weight:600}
-  .prog-row{display:flex;justify-content:space-between;margin-bottom:5px}
-  .prog-label{font-size:11px;color:#666}
-  .prog-pct{font-size:11px;color:#2ECC71;font-weight:500}
-  .prog-bar{height:4px;background:#2a2a2a;border-radius:2px;margin-bottom:16px}
-  .prog-fill{height:4px;background:#2ECC71;border-radius:2px}
-  .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-  .stat-card{background:#1e1e1e;border-radius:12px;padding:12px 14px;border:1px solid #2a2a2a}
-  .stat-label{font-size:11px;color:#666;margin-bottom:4px}
-  .stat-value{font-size:24px;font-weight:700;color:#fff;line-height:1.1}
-  .stat-sub{font-size:11px;color:#2ECC71;margin-top:2px}
-  .section-label{font-size:10px;color:#555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
-  .habit-row{display:flex;align-items:center;gap:6px;margin-bottom:16px}
-  .habit-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
-  .dot-active{background:#2ECC71;color:#0a2e18}
-  .dot-today{background:#1a2e1f;border:2px solid #2ECC71;color:#2ECC71}
-  .dot-inactive{background:#1e1e1e;border:1px solid #2a2a2a;color:#444}
-  .dot-missed{background:#1e1e1e;border:1px solid #3a2a2a;color:#553333}
-  .muscle-section{margin-bottom:16px}
-  .muscle-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-  .muscle-name{font-size:12px;color:#aaa;width:64px;flex-shrink:0}
-  .muscle-bar-bg{flex:1;height:5px;background:#2a2a2a;border-radius:3px}
-  .muscle-bar-fill{height:5px;border-radius:3px;transition:width 0.6s ease}
-  .muscle-pct{font-size:11px;color:#555;width:32px;text-align:right;flex-shrink:0}
-  .quote-box{background:#1a2a1a;border-left:3px solid #2ECC71;border-radius:0 8px 8px 0;padding:10px 12px;margin-bottom:16px}
-  .quote-text{font-size:12px;color:#888;line-height:1.6;font-style:italic}
-  .settings-section{background:#1e1e1e;border-radius:12px;padding:14px;margin-bottom:20px;border:1px solid #2a2a2a}
-  .settings-title{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
-  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-  .field-full{margin-bottom:8px}
-  .field label{font-size:10px;color:#666;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em}
-  .field input{width:100%;background:#141414;border:1px solid #333;border-radius:8px;padding:8px 10px;color:#fff;font-size:12px;outline:none}
-  .field input:focus{border-color:#2ECC71}
-  .save-btn{width:100%;background:#2ECC71;color:#0a2e18;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
-  .status-bar{font-size:10px;color:#555;text-align:center;padding:4px 0 12px}
-  .status-live{color:#2ECC71}
-  .status-offline{color:#e74c3c}
-  </style>
-  </head>
-  <body>
-  <div class="app-header">
-    <div class="app-icon">R</div>
-    <div class="app-name">RepRise</div>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RepRise</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#141414;font-family:system-ui,sans-serif;color:#fff;padding:20px 20px 100px}
+.app-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+.app-icon{width:38px;height:38px;background:#2ECC71;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#0a2e18}
+.app-name{font-size:16px;font-weight:700;color:#fff}
+.greeting{font-size:24px;font-weight:700;color:#fff;margin-bottom:3px}
+.greeting span{color:#2ECC71}
+.date-text{font-size:13px;color:#666;margin-bottom:14px}
+.week-badge{display:inline-flex;align-items:center;gap:6px;background:#1a2e1f;border:1px solid #2ECC71;border-radius:20px;padding:5px 14px;margin-bottom:10px}
+.week-text{font-size:12px;color:#2ECC71;font-weight:600}
+.prog-row{display:flex;justify-content:space-between;margin-bottom:5px}
+.prog-label{font-size:11px;color:#666}
+.prog-pct{font-size:11px;color:#2ECC71;font-weight:500}
+.prog-bar{height:4px;background:#2a2a2a;border-radius:2px;margin-bottom:16px}
+.prog-fill{height:4px;background:#2ECC71;border-radius:2px}
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{background:#1e1e1e;border-radius:12px;padding:12px 14px;border:1px solid #2a2a2a}
+.stat-label{font-size:11px;color:#666;margin-bottom:4px}
+.stat-value{font-size:24px;font-weight:700;color:#fff;line-height:1.1}
+.stat-sub{font-size:11px;color:#2ECC71;margin-top:2px}
+.section-label{font-size:10px;color:#555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
+.habit-row{display:flex;align-items:center;gap:6px;margin-bottom:16px}
+.habit-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
+.dot-active{background:#2ECC71;color:#0a2e18}
+.dot-today{background:#1a2e1f;border:2px solid #2ECC71;color:#2ECC71}
+.dot-inactive{background:#1e1e1e;border:1px solid #2a2a2a;color:#444}
+.dot-missed{background:#1e1e1e;border:1px solid #3a2a2a;color:#553333}
+.muscle-section{margin-bottom:16px}
+.muscle-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.muscle-name{font-size:12px;color:#aaa;width:64px;flex-shrink:0}
+.muscle-bar-bg{flex:1;height:5px;background:#2a2a2a;border-radius:3px}
+.muscle-bar-fill{height:5px;border-radius:3px;transition:width 0.6s ease}
+.muscle-pct{font-size:11px;color:#555;width:32px;text-align:right;flex-shrink:0}
+.quote-box{background:#1a2a1a;border-left:3px solid #2ECC71;border-radius:0 8px 8px 0;padding:10px 12px;margin-bottom:16px}
+.quote-text{font-size:12px;color:#888;line-height:1.6;font-style:italic}
+.settings-section{background:#1e1e1e;border-radius:12px;padding:14px;margin-bottom:20px;border:1px solid #2a2a2a}
+.settings-title{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.field-full{margin-bottom:8px}
+.field label{font-size:10px;color:#666;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em}
+.field input{width:100%;background:#141414;border:1px solid #333;border-radius:8px;padding:8px 10px;color:#fff;font-size:12px;outline:none}
+.field input:focus{border-color:#2ECC71}
+.save-btn{width:100%;background:#2ECC71;color:#0a2e18;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
+.status-bar{font-size:10px;color:#555;text-align:center;padding:4px 0 12px;letter-spacing:0.05em}
+.status-live{color:#2ECC71}
+.status-offline{color:#e74c3c}
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="app-icon">R</div>
+  <div class="app-name">RepRise</div>
+</div>
+
+<div class="greeting">Good <span id="time-greeting">morning</span>, <span id="user-name">Shoeb</span></div>
+<div class="date-text" id="today-date"></div>
+<div class="status-bar" id="status-bar">Connecting to live data…</div>
+
+<div class="week-badge">
+  <span class="week-text" id="week-badge-text">Week 1 of 8</span>
+</div>
+
+<div class="prog-row">
+  <span class="prog-label">Program progress</span>
+  <span class="prog-pct" id="prog-pct">0%</span>
+</div>
+<div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+
+<div class="stats-grid">
+  <div class="stat-card">
+    <div class="stat-label">Sessions</div>
+    <div class="stat-value" id="stat-sessions">1</div>
+    <div class="stat-sub">this program</div>
   </div>
-  <div class="greeting">Good <span id="time-greeting">morning</span>, <span id="user-name">Shoeb</span></div>
-  <div class="date-text" id="today-date"></div>
-  <div class="status-bar" id="status-bar">Connecting to live data...</div>
-  <div class="week-badge"><span class="week-text" id="week-badge-text">Week 1 of 8</span></div>
-  <div class="prog-row">
-    <span class="prog-label">Program progress</span>
-    <span class="prog-pct" id="prog-pct">0%</span>
+  <div class="stat-card">
+    <div class="stat-label">Total sets</div>
+    <div class="stat-value" id="stat-sets">18</div>
+    <div class="stat-sub">logged</div>
   </div>
-  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-label">Sessions</div><div class="stat-value" id="stat-sessions">1</div><div class="stat-sub">this program</div></div>
-    <div class="stat-card"><div class="stat-label">Total sets</div><div class="stat-value" id="stat-sets">18</div><div class="stat-sub">logged</div></div>
-    <div class="stat-card"><div class="stat-label">Workout time</div><div class="stat-value" id="stat-minutes">60</div><div class="stat-sub">minutes</div></div>
-    <div class="stat-card"><div class="stat-label">Streak</div><div class="stat-value" id="stat-streak">1</div><div class="stat-sub">weeks active</div></div>
+  <div class="stat-card">
+    <div class="stat-label">Workout time</div>
+    <div class="stat-value" id="stat-minutes">60</div>
+    <div class="stat-sub">minutes</div>
   </div>
-  <div class="section-label">This week</div>
-  <div class="habit-row" id="habit-dots"></div>
-  <div class="section-label">Muscle balance</div>
-  <div class="muscle-section" id="muscle-section"></div>
-  <div class="section-label">Daily quote</div>
-  <div class="quote-box"><div class="quote-text" id="daily-quote"></div></div>
-  <div class="settings-section">
-    <div class="settings-title">Program settings</div>
-    <div class="field-full field"><label>Program name</label><input type="text" id="prog-name" placeholder="e.g. Summer Shred 2026"></div>
-    <div class="field-row">
-      <div class="field"><label>Start date</label><input type="date" id="start-date" value="2026-05-24" oninput="updateProgress()"></div>
-      <div class="field"><label>Duration (weeks)</label><input type="number" id="duration" value="8" min="1" max="52" oninput="updateProgress()"></div>
+  <div class="stat-card">
+    <div class="stat-label">Streak</div>
+    <div class="stat-value" id="stat-streak">1</div>
+    <div class="stat-sub">weeks active</div>
+  </div>
+</div>
+
+<div class="section-label">This week</div>
+<div class="habit-row" id="habit-dots"></div>
+
+<div class="section-label">Muscle balance</div>
+<div class="muscle-section" id="muscle-section"></div>
+
+<div class="section-label">Daily quote</div>
+<div class="quote-box">
+  <div class="quote-text" id="daily-quote"></div>
+</div>
+
+<div class="settings-section">
+  <div class="settings-title">Program settings</div>
+  <div class="field-full field">
+    <label>Program name</label>
+    <input type="text" id="prog-name" placeholder="e.g. Summer Shred 2026">
+  </div>
+  <div class="field-row">
+    <div class="field">
+      <label>Start date</label>
+      <input type="date" id="start-date" value="2026-05-24" oninput="updateProgress()">
     </div>
-    <button class="save-btn" onclick="saveSettings()">Save settings</button>
+    <div class="field">
+      <label>Duration (weeks)</label>
+      <input type="number" id="duration" value="8" min="1" max="52" oninput="updateProgress()">
+    </div>
   </div>
-  <script>
-  var API_URL='https://script.google.com/macros/s/AKfycbz3J67IXslO3pHvj6bZvsmLWefe95w9PZLncJ4pEtAU3O6NwEEMYOeQdCX0OXRSB8E/exec';
-  var USER_EMAIL='khan.shoeb76@gmail.com';
-  var MUSCLE_COLORS={'Push':'#2ECC71','Pull':'#27AE60','Legs':'#3498DB','Core':'#F39C12','Cardio':'#9B59B6','Stretching':'#1ABC9C','Skills':'#E67E22','Miscellaneou
-  s':'#95A5A6'};
-  var QUOTES=["Train hard, recover harder.","Your body can do it.","The only bad workout is the one that didn't happen.","Push yourself — no one else will.","Sore
-  today, strong tomorrow.","Your health is an investment.","Don't wish for it. Work for it.","The pain today is the strength tomorrow.","Fall in love with taking
-  care of yourself.","Consistency is the bridge between goals and results."];
-  var today=new Date();
-  document.getElementById('time-greeting').textContent=today.getHours()<12?'morning':today.getHours()<17?'afternoon':'evening';
-  document.getElementById('today-date').textContent=today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('daily-quote').textContent='"'+QUOTES[today.getDate()%QUOTES.length]+'"';
-  renderHabitDots([false,false,false,false,true,false,false]);
-  renderMuscleBalance([{name:'Push',pct:67},{name:'Pull',pct:17},{name:'Core',pct:17}]);
+  <button class="save-btn" onclick="saveSettings()">Save settings</button>
+</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────────────
+var API_URL    = 'https://script.google.com/macros/s/AKfycbz3J67IXslO3pHvj6bZvsmLWefe95w9PZLncJ4pEtAU3O6NwEEMYOeQdCX0OXRSB8E/exec';
+var USER_EMAIL = 'khan.shoeb76@gmail.com';
+
+var MUSCLE_COLORS = {
+  'Push':'#2ECC71','Pull':'#27AE60','Legs':'#3498DB','Core':'#F39C12',
+  'Cardio':'#9B59B6','Stretching':'#1ABC9C','Skills':'#E67E22','Miscellaneous':'#95A5A6'
+};
+
+var DAY_LABELS = ['S','M','T','W','T','F','S'];
+
+var STATIC_QUOTES = [
+  "Train hard, recover harder.",
+  "Your body can do it. It's your mind you have to convince.",
+  "The only bad workout is the one that didn't happen.",
+  "Push yourself because no one else is going to do it for you.",
+  "Sore today, strong tomorrow.",
+  "Your health is an investment, not an expense.",
+  "Don't wish for it. Work for it.",
+  "The pain you feel today is the strength you feel tomorrow.",
+  "Fall in love with taking care of yourself.",
+  "Consistency is the bridge between goals and results."
+];
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+var today = new Date();
+var hour  = today.getHours();
+
+document.getElementById('time-greeting').textContent = hour<12?'morning':hour<17?'afternoon':'evening';
+document.getElementById('today-date').textContent    = today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+// Show static defaults immediately — never show dashes
+renderHabitDots([false,false,false,false,true,false,false]);
+renderMuscleBalance([{name:'Push',pct:67},{name:'Pull',pct:17},{name:'Core',pct:17}]);
+document.getElementById('daily-quote').textContent = '"' + STATIC_QUOTES[today.getDate() % STATIC_QUOTES.length] + '"';
+updateProgress();
+
+// ─── LIVE DATA ────────────────────────────────────────────────────────────────
+function setStatus(msg, live) {
+  var el = document.getElementById('status-bar');
+  el.textContent = msg;
+  el.className = 'status-bar ' + (live ? 'status-live' : 'status-offline');
+}
+
+function applyLiveData(d) {
+  if (d.firstName)    document.getElementById('user-name').textContent       = d.firstName;
+  if (d.totalSessions !== undefined) document.getElementById('stat-sessions').textContent = d.totalSessions;
+  if (d.totalSets     !== undefined) document.getElementById('stat-sets').textContent     = d.totalSets;
+  if (d.workoutMinutes!== undefined) document.getElementById('stat-minutes').textContent  = d.workoutMinutes;
+  if (d.streak        !== undefined) document.getElementById('stat-streak').textContent   = d.streak;
+  if (d.programName)  document.getElementById('prog-name').value  = d.programName;
+  if (d.startDate)    document.getElementById('start-date').value = d.startDate;
+  if (d.durationWeeks)document.getElementById('duration').value   = d.durationWeeks;
+  if (d.dailyQuote)   document.getElementById('daily-quote').textContent = '"' + d.dailyQuote + '"';
+  if (d.habitGrid   && d.habitGrid.length   === 7) renderHabitDots(d.habitGrid);
+  if (d.muscleBalance&& d.muscleBalance.length)    renderMuscleBalance(d.muscleBalance);
   updateProgress();
-  function setStatus(m,ok){var e=document.getElementById('status-bar');e.textContent=m;e.className='status-bar '+(ok?'status-live':'status-offline');}
-  function applyLiveData(d){
-    if(d.firstName)document.getElementById('user-name').textContent=d.firstName;
-    if(d.totalSessions!=null)document.getElementById('stat-sessions').textContent=d.totalSessions;
-    if(d.totalSets!=null)document.getElementById('stat-sets').textContent=d.totalSets;
-    if(d.workoutMinutes!=null)document.getElementById('stat-minutes').textContent=d.workoutMinutes;
-    if(d.streak!=null)document.getElementById('stat-streak').textContent=d.streak;
-    if(d.programName)document.getElementById('prog-name').value=d.programName;
-    if(d.startDate)document.getElementById('start-date').value=d.startDate;
-    if(d.durationWeeks)document.getElementById('duration').value=d.durationWeeks;
-    if(d.dailyQuote)document.getElementById('daily-quote').textContent='"'+d.dailyQuote+'"';
-    if(d.habitGrid&&d.habitGrid.length===7)renderHabitDots(d.habitGrid);
-    if(d.muscleBalance&&d.muscleBalance.length)renderMuscleBalance(d.muscleBalance);
-    updateProgress();
-    setStatus('Live data loaded',true);
-  }
-  function fetchLiveData(){
-    setStatus('Connecting to live data...',false);
-    fetch(API_URL+'?email='+encodeURIComponent(USER_EMAIL))
-      .then(function(r){return r.json();})
-      .then(function(d){if(d.error)throw d.error;applyLiveData(d);})
-      .catch(function(){tryJsonp();});
-  }
-  function tryJsonp(){
-    var cb='rp'+Date.now();
-    var done=false;
-    var t=setTimeout(function(){if(!done){done=true;setStatus('Could not reach live data',false);}},8000);
-    window[cb]=function(d){if(done)return;done=true;clearTimeout(t);delete window[cb];if(d.error){setStatus('API error',false);return;}applyLiveData(d);};
-    var s=document.createElement('script');
-    s.src=API_URL+'?email='+encodeURIComponent(USER_EMAIL)+'&callback='+cb;
-    s.onerror=function(){if(!done){done=true;clearTimeout(t);setStatus('Could not reach live data',false);}};
-    document.body.appendChild(s);
-  }
-  function renderHabitDots(grid){
-    var c=document.getElementById('habit-dots'),dow=today.getDay();c.innerHTML='';
-    ['S','M','T','W','T','F','S'].forEach(function(l,i){var d=document.createElement('div');d.className='habit-dot
-  '+(i===dow?(grid[i]?'dot-active':'dot-today'):i<dow?(grid[i]?'dot-active':'dot-missed'):'dot-inactive');d.textContent=l;c.appendChild(d);});
-  }
-  function renderMuscleBalance(g){
-    var c=document.getElementById('muscle-section');c.innerHTML='';
-    g.forEach(function(m){var r=document.createElement('div');r.className='muscle-row';r.innerHTML='<span class="muscle-name">'+m.name+'</span><div
-  class="muscle-bar-bg"><div class="muscle-bar-fill" style="width:'+m.pct+'%;background:'+(MUSCLE_COLORS[m.name]||'#2ECC71')+'"></div></div><span
-  class="muscle-pct">'+m.pct+'%</span>';c.appendChild(r);});
-  }
-  function updateProgress(){
-    var s=document.getElementById('start-date').value,dur=parseInt(document.getElementById('duration').value)||8;
-    if(!s)return;
-    var diff=Math.floor((today-new Date(s))/86400000),w=Math.max(1,Math.floor(diff/7)+1),p=Math.min(100,Math.round(diff/(dur*7)*1000)/10);
-    document.getElementById('week-badge-text').textContent='Week '+Math.min(w,dur)+' of '+dur;
-    document.getElementById('prog-pct').textContent=p+'%';
-    document.getElementById('prog-fill').style.width=p+'%';
-  }
-  function saveSettings(){localStorage.setItem('rs',JSON.stringify({n:document.getElementById('prog-name').value,s:document.getElementById('start-date').value,d:do
-  cument.getElementById('duration').value}));updateProgress();alert('Saved locally.');}
-  fetchLiveData();
-  </script>
-  </body>
-  </html>
+  setStatus('Live data loaded', true);
+}
+
+// Try fetch() first
+function fetchLiveData() {
+  setStatus('Connecting to live data…', false);
+
+  fetch(API_URL + '?email=' + encodeURIComponent(USER_EMAIL))
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      if (d.error) throw new Error(d.error);
+      applyLiveData(d);
+    })
+    .catch(function() {
+      // fetch failed — try JSONP as fallback
+      tryJsonp();
+    });
+}
+
+// JSONP fallback (bypasses CORS redirect issues)
+function tryJsonp() {
+  var cb   = 'rp_' + Date.now();
+  var done = false;
+
+  var timer = setTimeout(function() {
+    if (!done) { done = true; setStatus('Could not reach live data', false); }
+  }, 8000);
+
+  window[cb] = function(d) {
+    if (done) return;
+    done = true;
+    clearTimeout(timer);
+    delete window[cb];
+    if (d.error) { setStatus('Could not reach live data', false); return; }
+    applyLiveData(d);
+  };
+
+  var s    = document.createElement('script');
+  s.src    = API_URL + '?email=' + encodeURIComponent(USER_EMAIL) + '&callback=' + cb;
+  s.onerror = function() {
+    if (!done) { done = true; clearTimeout(timer); setStatus('Could not reach live data', false); }
+  };
+  document.body.appendChild(s);
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderHabitDots(grid) {
+  var c   = document.getElementById('habit-dots');
+  var dow = today.getDay();
+  c.innerHTML = '';
+  DAY_LABELS.forEach(function(lbl, i) {
+    var dot = document.createElement('div');
+    dot.className = 'habit-dot ' + (
+      i === dow ? (grid[i] ? 'dot-active' : 'dot-today') :
+      i <  dow ? (grid[i] ? 'dot-active' : 'dot-missed') : 'dot-inactive'
+    );
+    dot.textContent = lbl;
+    c.appendChild(dot);
+  });
+}
+
+function renderMuscleBalance(groups) {
+  var c = document.getElementById('muscle-section');
+  c.innerHTML = '';
+  if (!groups || !groups.length) return;
+  groups.forEach(function(g) {
+    var color = MUSCLE_COLORS[g.name] || '#2ECC71';
+    var row   = document.createElement('div');
+    row.className = 'muscle-row';
+    row.innerHTML =
+      '<span class="muscle-name">' + g.name + '</span>' +
+      '<div class="muscle-bar-bg"><div class="muscle-bar-fill" style="width:' + g.pct + '%;background:' + color + '"></div></div>' +
+      '<span class="muscle-pct">' + g.pct + '%</span>';
+    c.appendChild(row);
+  });
+}
+
+function updateProgress() {
+  var startVal = document.getElementById('start-date').value;
+  var dur      = parseInt(document.getElementById('duration').value) || 8;
+  if (!startVal) return;
+  var startMidnight  = new Date(startVal + 'T00:00:00');
+  var todayMidnight  = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  var diffDays = Math.floor((todayMidnight - startMidnight) / 86400000);
+  var week     = Math.max(1, Math.floor(diffDays / 7) + 1);
+  var pct      = Math.min(100, Math.round((diffDays / (dur * 7)) * 1000) / 10);
+  document.getElementById('week-badge-text').textContent = 'Week ' + Math.min(week,dur) + ' of ' + dur;
+  document.getElementById('prog-pct').textContent  = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+}
+
+function saveSettings() {
+  localStorage.setItem('reprise_settings', JSON.stringify({
+    programName: document.getElementById('prog-name').value,
+    startDate:   document.getElementById('start-date').value,
+    duration:    document.getElementById('duration').value
+  }));
+  updateProgress();
+  alert('Settings saved locally.\n\nTo sync permanently, update the USERS tab in your RepRise Google Sheet.');
+}
+
+// ─── START ────────────────────────────────────────────────────────────────────
+fetchLiveData();
+</script>
+</body>
+</html>
