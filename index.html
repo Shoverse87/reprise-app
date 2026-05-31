@@ -1,171 +1,159 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RepRise</title>
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:#141414;font-family:system-ui,sans-serif;color:#fff;padding:20px 20px 100px}
-.app-header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
-.app-icon{width:38px;height:38px;background:#2ECC71;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;color:#0a2e18}
-.app-name{font-size:16px;font-weight:700;color:#fff}
-.greeting{font-size:24px;font-weight:700;color:#fff;margin-bottom:3px}
-.greeting span{color:#2ECC71}
-.date-text{font-size:13px;color:#666;margin-bottom:14px}
-.week-badge{display:inline-flex;align-items:center;gap:6px;background:#1a2e1f;border:1px solid #2ECC71;border-radius:20px;padding:5px 14px;margin-bottom:10px}
-.week-text{font-size:12px;color:#2ECC71;font-weight:600}
-.prog-row{display:flex;justify-content:space-between;margin-bottom:5px}
-.prog-label{font-size:11px;color:#666}
-.prog-pct{font-size:11px;color:#2ECC71;font-weight:500}
-.prog-bar{height:4px;background:#2a2a2a;border-radius:2px;margin-bottom:16px}
-.prog-fill{height:4px;background:#2ECC71;border-radius:2px}
-.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
-.stat-card{background:#1e1e1e;border-radius:12px;padding:12px 14px;border:1px solid #2a2a2a}
-.stat-label{font-size:11px;color:#666;margin-bottom:4px}
-.stat-value{font-size:24px;font-weight:700;color:#fff;line-height:1.1}
-.stat-sub{font-size:11px;color:#2ECC71;margin-top:2px}
-.section-label{font-size:10px;color:#555;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px}
-.habit-row{display:flex;align-items:center;gap:6px;margin-bottom:16px}
-.habit-dot{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
-.dot-active{background:#2ECC71;color:#0a2e18}
-.dot-today{background:#1a2e1f;border:2px solid #2ECC71;color:#2ECC71}
-.dot-inactive{background:#1e1e1e;border:1px solid #2a2a2a;color:#444}
-.muscle-section{margin-bottom:16px}
-.muscle-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.muscle-name{font-size:12px;color:#aaa;width:64px;flex-shrink:0}
-.muscle-bar-bg{flex:1;height:5px;background:#2a2a2a;border-radius:3px}
-.muscle-bar-fill{height:5px;border-radius:3px}
-.muscle-pct{font-size:11px;color:#555;width:32px;text-align:right;flex-shrink:0}
-.quote-box{background:#1a2a1a;border-left:3px solid #2ECC71;border-radius:0 8px 8px 0;padding:10px 12px;margin-bottom:16px}
-.quote-text{font-size:12px;color:#888;line-height:1.6;font-style:italic}
-.settings-section{background:#1e1e1e;border-radius:12px;padding:14px;margin-bottom:20px;border:1px solid #2a2a2a}
-.settings-title{font-size:11px;color:#555;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:12px}
-.field-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
-.field-full{margin-bottom:8px}
-.field label{font-size:10px;color:#666;display:block;margin-bottom:4px;text-transform:uppercase;letter-spacing:0.05em}
-.field input{width:100%;background:#141414;border:1px solid #333;border-radius:8px;padding:8px 10px;color:#fff;font-size:12px;outline:none}
-.field input:focus{border-color:#2ECC71}
-.save-btn{width:100%;background:#2ECC71;color:#0a2e18;border:none;border-radius:10px;padding:9px;font-size:13px;font-weight:700;cursor:pointer;margin-top:4px}
-</style>
-</head>
-<body>
+/**
+ * RepRise – Live Data API
+ *
+ * Deploy this as a Web App (Execute as: Me, Anyone can access).
+ * The Welcome Card fetches:  GET <webAppUrl>?email=khan.shoeb76@gmail.com
+ *
+ * Returns JSON:
+ * {
+ *   firstName, programName, startDate, durationWeeks,
+ *   totalSessions, totalSets, workoutMinutes, streak,
+ *   muscleBalance: [{name, pct, sets}],
+ *   habitGrid: [bool×7],   // Sun–Sat, true = trained
+ *   dailyQuote
+ * }
+ */
 
-<div class="app-header">
-  <div class="app-icon">R</div>
-  <div class="app-name">RepRise</div>
-</div>
+var SHEET_ID = '1gtrJzQ30-EGdmrHjHUQgCQFwjG7z_zhMel3eMNPyMws';
 
-<div class="greeting">Good <span id="time-greeting">morning</span>, <span>Shoeb</span></div>
-<div class="date-text" id="today-date"></div>
+// ─── WEB APP ENTRY POINT ──────────────────────────────────────────────────────
+function doGet(e) {
+  var email = (e && e.parameter && e.parameter.email)
+    ? e.parameter.email
+    : 'khan.shoeb76@gmail.com';
 
-<div class="week-badge">
-  <span class="week-text" id="week-badge-text">Week 1 of 8</span>
-</div>
-
-<div class="prog-row">
-  <span class="prog-label">Program progress</span>
-  <span class="prog-pct" id="prog-pct">12.5%</span>
-</div>
-<div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:12.5%"></div></div>
-
-<div class="stats-grid">
-  <div class="stat-card">
-    <div class="stat-label">Sessions</div>
-    <div class="stat-value">2</div>
-    <div class="stat-sub">this program</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Total sets</div>
-    <div class="stat-value">6</div>
-    <div class="stat-sub">logged</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Workout time</div>
-    <div class="stat-value">120</div>
-    <div class="stat-sub">minutes</div>
-  </div>
-  <div class="stat-card">
-    <div class="stat-label">Streak</div>
-    <div class="stat-value">2</div>
-    <div class="stat-sub">days active</div>
-  </div>
-</div>
-
-<div class="section-label">This week</div>
-<div class="habit-row" id="habit-dots"></div>
-
-<div class="section-label">Muscle balance</div>
-<div class="muscle-section">
-  <div class="muscle-row">
-    <span class="muscle-name">Push</span>
-    <div class="muscle-bar-bg"><div class="muscle-bar-fill" style="width:67%;background:#2ECC71"></div></div>
-    <span class="muscle-pct">67%</span>
-  </div>
-  <div class="muscle-row">
-    <span class="muscle-name">Pull</span>
-    <div class="muscle-bar-bg"><div class="muscle-bar-fill" style="width:17%;background:#27AE60"></div></div>
-    <span class="muscle-pct">17%</span>
-  </div>
-  <div class="muscle-row">
-    <span class="muscle-name">Core</span>
-    <div class="muscle-bar-bg"><div class="muscle-bar-fill" style="width:17%;background:#F39C12"></div></div>
-    <span class="muscle-pct">17%</span>
-  </div>
-</div>
-
-<div class="section-label">Daily quote</div>
-<div class="quote-box">
-  <div class="quote-text" id="daily-quote"></div>
-</div>
-
-<div class="settings-section">
-  <div class="settings-title">Program settings</div>
-  <div class="field-full field">
-    <label>Program name</label>
-    <input type="text" id="prog-name" value="Summer Shred 2026">
-  </div>
-  <div class="field-row">
-    <div class="field">
-      <label>Start date</label>
-      <input type="date" id="start-date" value="2026-05-24" oninput="updateProgress()">
-    </div>
-    <div class="field">
-      <label>Duration (weeks)</label>
-      <input type="number" id="duration" value="8" min="1" max="52" oninput="updateProgress()">
-    </div>
-  </div>
-  <button class="save-btn" onclick="saveSettings()">Save settings</button>
-</div>
-
-<script>
-const quotes=["Train hard, recover harder.","Your body can do it. It's your mind you have to convince.","The only bad workout is the one that didn't happen.","Push yourself because no one else is going to do it for you.","Sore today, strong tomorrow.","Your health is an investment, not an expense.","Don't wish for it. Work for it.","The pain you feel today is the strength you feel tomorrow.","Fall in love with taking care of yourself.","One workout at a time. One day at a time.","Do something today that your future self will thank you for.","Discipline is doing it even when you don't feel like it.","You don't have to be extreme. Just consistent.","Every rep brings you closer to the person you want to become.","Sweat is just fat crying.","Success starts with self-discipline.","Wake up. Work out. Be happy.","Fitness is not about being better than someone else.","The hardest lift is lifting your butt off the couch.","Strength doesn't come from what you can do."];
-const today=new Date();
-const dayOfWeek=today.getDay();
-const days=['S','M','T','W','T','F','S'];
-const habitDots=document.getElementById('habit-dots');
-days.forEach((d,i)=>{
-  const dot=document.createElement('div');
-  dot.className='habit-dot '+(i<dayOfWeek?'dot-active':i===dayOfWeek?'dot-today':'dot-inactive');
-  dot.textContent=d;
-  habitDots.appendChild(dot);
-});
-const hour=today.getHours();
-document.getElementById('time-greeting').textContent=hour<12?'morning':hour<17?'afternoon':'evening';
-document.getElementById('today-date').textContent=today.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
-document.getElementById('daily-quote').textContent='"'+quotes[today.getDate()%quotes.length]+'"';
-function updateProgress(){
-  const start=new Date(document.getElementById('start-date').value);
-  const dur=parseInt(document.getElementById('duration').value)||8;
-  const diffDays=Math.floor((today-start)/(1000*60*60*24));
-  const week=Math.max(1,Math.floor(diffDays/7)+1);
-  const pct=Math.min(100,Math.round((diffDays/(dur*7))*1000)/10);
-  document.getElementById('week-badge-text').textContent='Week '+Math.min(week,dur)+' of '+dur;
-  document.getElementById('prog-pct').textContent=pct+'%';
-  document.getElementById('prog-fill').style.width=pct+'%';
+  try {
+    var ss   = SpreadsheetApp.openById(SHEET_ID);
+    var data = buildPayload(ss, email);
+    return ContentService
+      .createTextOutput(JSON.stringify(data))
+      .setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService
+      .createTextOutput(JSON.stringify({ error: err.toString() }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
 }
-function saveSettings(){alert('Settings saved!\n\nRemember to update these in your RepRise Google Sheet → SETTINGS tab too.');}
-updateProgress();
-</script>
-</body>
-</html>
+
+// ─── PAYLOAD BUILDER ──────────────────────────────────────────────────────────
+function buildPayload(ss, email) {
+  var users    = sheetRows(ss, 'USERS');
+  var sessions = sheetRows(ss, 'SESSIONS').filter(function(r) { return r['User Email'] === email; });
+  var workouts = sheetRows(ss, 'WORKOUTS').filter(function(r) { return r['User Email'] === email; });
+  var quotes   = sheetRows(ss, 'QUOTES');
+
+  // ── User profile
+  var user = users.filter(function(u) { return u['User Email'] === email; })[0] || {};
+  var firstName    = user['First Name']               || 'Athlete';
+  var programName  = user['Program Name']             || '';
+  var startDate    = fmtDate(user['Program Start Date']) || '';
+  var durationWeeks = parseInt(user['Program Duration (Weeks)']) || 8;
+
+  // ── Session stats
+  var totalSessions   = sessions.length;
+  var workoutMinutes  = sessions.reduce(function(s, r) { return s + (parseFloat(r['Workout Time (Min.)']) || 0); }, 0);
+
+  // ── Set stats
+  var totalSets = workouts.reduce(function(s, r) { return s + (parseInt(r['Sets']) || 0); }, 0);
+
+  // ── Streak (consecutive program weeks with ≥1 session, ending at latest week)
+  var streak = computeStreak(sessions);
+
+  // ── Muscle balance (% of total sets per group, only groups with sets > 0)
+  var muscleBalance = computeMuscleBalance(workouts);
+
+  // ── This-week habit grid (Sun–Sat)
+  var habitGrid = computeHabitGrid(sessions);
+
+  // ── Daily quote (deterministic by day-of-month so it stays stable all day)
+  var dailyQuote = '';
+  if (quotes.length) {
+    var idx = new Date().getDate() % quotes.length;
+    dailyQuote = quotes[idx]['Quote'] || '';
+  }
+
+  return {
+    firstName:     firstName,
+    programName:   programName,
+    startDate:     startDate,
+    durationWeeks: durationWeeks,
+    totalSessions: totalSessions,
+    totalSets:     totalSets,
+    workoutMinutes: workoutMinutes,
+    streak:        streak,
+    muscleBalance: muscleBalance,
+    habitGrid:     habitGrid,
+    dailyQuote:    dailyQuote
+  };
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+
+function sheetRows(ss, name) {
+  var sheet = ss.getSheetByName(name);
+  if (!sheet) return [];
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2) return [];
+  var headers = data[0];
+  return data.slice(1)
+    .filter(function(row) { return row.some(function(c) { return c !== ''; }); })
+    .map(function(row) {
+      var obj = {};
+      headers.forEach(function(h, i) { obj[h] = row[i]; });
+      return obj;
+    });
+}
+
+function fmtDate(d) {
+  if (!d) return '';
+  var dt = (d instanceof Date) ? d : new Date(d);
+  if (isNaN(dt)) return String(d);
+  var y = dt.getFullYear();
+  var m = String(dt.getMonth() + 1).padStart(2, '0');
+  var day = String(dt.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+
+function computeStreak(sessions) {
+  if (!sessions.length) return 0;
+  var weeks = sessions.map(function(s) { return parseInt(s['Week']); }).filter(Boolean);
+  var maxWeek = Math.max.apply(null, weeks);
+  var weekSet = {};
+  weeks.forEach(function(w) { weekSet[w] = true; });
+  var streak = 0;
+  for (var w = maxWeek; w >= 1; w--) {
+    if (weekSet[w]) { streak++; } else { break; }
+  }
+  return streak;
+}
+
+function computeMuscleBalance(workouts) {
+  var totals = {};
+  workouts.forEach(function(r) {
+    var g = r['Muscle Group'];
+    var s = parseInt(r['Sets']) || 0;
+    if (g) totals[g] = (totals[g] || 0) + s;
+  });
+  var grand = Object.keys(totals).reduce(function(s, k) { return s + totals[k]; }, 0);
+  if (!grand) return [];
+  return Object.keys(totals)
+    .filter(function(k) { return totals[k] > 0; })
+    .map(function(k) {
+      return { name: k, sets: totals[k], pct: Math.round(totals[k] / grand * 100) };
+    })
+    .sort(function(a, b) { return b.sets - a.sets; });
+}
+
+function computeHabitGrid(sessions) {
+  var today   = new Date();
+  var dow     = today.getDay();
+  var sunday  = new Date(today); sunday.setDate(today.getDate() - dow); sunday.setHours(0,0,0,0);
+  var saturday = new Date(sunday); saturday.setDate(sunday.getDate() + 6); saturday.setHours(23,59,59,999);
+
+  var grid = [false, false, false, false, false, false, false];
+  sessions.forEach(function(s) {
+    var d = (s['Date'] instanceof Date) ? s['Date'] : new Date(s['Date']);
+    if (!isNaN(d) && d >= sunday && d <= saturday) { grid[d.getDay()] = true; }
+  });
+  return grid;
+}
