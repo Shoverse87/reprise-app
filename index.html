@@ -51,6 +51,15 @@ body{background:#141414;font-family:system-ui,sans-serif;color:#fff;padding:20px
 .status-bar{font-size:10px;color:#555;text-align:center;padding:4px 0 12px;letter-spacing:0.05em}
 .status-live{color:#2ECC71}
 .status-offline{color:#e74c3c}
+.timer-presets{display:flex;gap:6px;margin-bottom:12px}
+.preset-btn{flex:1;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:8px;padding:7px 2px;color:#aaa;font-size:12px;font-weight:600;cursor:pointer}
+.preset-btn.active{background:#1a2e1f;border-color:#2ECC71;color:#2ECC71}
+.timer-display{text-align:center;margin-bottom:12px}
+.timer-digits{font-size:64px;font-weight:700;color:#fff;letter-spacing:2px;line-height:1}
+.timer-done .timer-digits{color:#2ECC71}
+.timer-controls{display:flex;gap:8px;margin-bottom:16px}
+.timer-start{flex:1;background:#2ECC71;color:#0a2e18;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:700;cursor:pointer}
+.timer-reset{width:48px;background:#1e1e1e;border:1px solid #2a2a2a;border-radius:10px;font-size:20px;cursor:pointer;color:#aaa}
 </style>
 </head>
 <body>
@@ -104,6 +113,24 @@ body{background:#141414;font-family:system-ui,sans-serif;color:#fff;padding:20px
 
 <div class="section-label">Muscle balance</div>
 <div class="muscle-section" id="muscle-section"></div>
+
+<div class="section-label">Rest Timer</div>
+<div id="timer-wrap">
+  <div class="timer-presets">
+    <button class="preset-btn" onclick="selectPreset(30,this)">30s</button>
+    <button class="preset-btn active" onclick="selectPreset(60,this)">60s</button>
+    <button class="preset-btn" onclick="selectPreset(90,this)">90s</button>
+    <button class="preset-btn" onclick="selectPreset(120,this)">2m</button>
+    <button class="preset-btn" onclick="selectPreset(180,this)">3m</button>
+  </div>
+  <div class="timer-display">
+    <div class="timer-digits" id="timer-digits">1:00</div>
+  </div>
+  <div class="timer-controls">
+    <button class="timer-start" id="timer-start" onclick="toggleTimer()">Start</button>
+    <button class="timer-reset" onclick="resetTimer()">↺</button>
+  </div>
+</div>
 
 <div class="section-label">Daily quote</div>
 <div class="quote-box">
@@ -286,6 +313,67 @@ function saveSettings() {
   }));
   updateProgress();
   alert('Settings saved locally.\n\nTo sync permanently, update the USERS tab in your RepRise Google Sheet.');
+}
+
+// ─── TIMER ────────────────────────────────────────────────────────────────────
+var timerTotal     = 60;
+var timerRemaining = 60;
+var timerTick      = null;
+var timerRunning   = false;
+
+function fmtTime(s) {
+  return Math.floor(s/60) + ':' + (s%60 < 10 ? '0' : '') + (s%60);
+}
+
+function selectPreset(secs, el) {
+  if (timerRunning) return;
+  timerTotal = secs; timerRemaining = secs;
+  document.querySelectorAll('.preset-btn').forEach(function(b){b.classList.remove('active');});
+  el.classList.add('active');
+  document.getElementById('timer-digits').textContent = fmtTime(secs);
+  document.getElementById('timer-wrap').classList.remove('timer-done');
+  document.getElementById('timer-start').textContent = 'Start';
+}
+
+function toggleTimer() {
+  if (timerRemaining === 0) { resetTimer(); return; }
+  timerRunning = !timerRunning;
+  document.getElementById('timer-start').textContent = timerRunning ? 'Pause' : 'Resume';
+  if (timerRunning) {
+    timerTick = setInterval(function() {
+      timerRemaining--;
+      document.getElementById('timer-digits').textContent = fmtTime(timerRemaining);
+      if (timerRemaining <= 0) {
+        clearInterval(timerTick); timerRunning = false;
+        document.getElementById('timer-start').textContent = 'Restart';
+        document.getElementById('timer-wrap').classList.add('timer-done');
+        playDoneBeep();
+      }
+    }, 1000);
+  } else {
+    clearInterval(timerTick);
+  }
+}
+
+function resetTimer() {
+  clearInterval(timerTick); timerRunning = false; timerRemaining = timerTotal;
+  document.getElementById('timer-digits').textContent = fmtTime(timerTotal);
+  document.getElementById('timer-wrap').classList.remove('timer-done');
+  document.getElementById('timer-start').textContent = 'Start';
+}
+
+function playDoneBeep() {
+  try {
+    var ctx = new (window.AudioContext || window.webkitAudioContext)();
+    [0, 0.25, 0.5].forEach(function(t) {
+      var osc = ctx.createOscillator(), gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = 880; osc.type = 'sine';
+      gain.gain.setValueAtTime(0.8, ctx.currentTime + t);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + t + 0.25);
+      osc.start(ctx.currentTime + t); osc.stop(ctx.currentTime + t + 0.3);
+    });
+  } catch(e) {}
 }
 
 // ─── START ────────────────────────────────────────────────────────────────────
