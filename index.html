@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
   <html lang="en">
   <head>
   <meta charset="UTF-8">
@@ -127,7 +127,7 @@
   </div>
 
   <script>
-  var API_URL = 'https://script.google.com/macros/s/AKfycbx5mOxIXzhFO70FiTqlwcpUdJ5y9_3LD_aCP1PTv25JOMurpRcl6Q660qjneWlEE_Rb/exec';
+  var API_URL   = 'https://script.google.com/macros/s/AKfycbx5mOxIXzhFO70FiTqlwcpUdJ5y9_3LD_aCP1PTv25JOMurpRcl6Q660qjneWlEE_Rb/exec';
   var USER_EMAIL = 'khan.shoeb76@gmail.com';
 
   var MUSCLE_COLORS = {
@@ -147,97 +147,93 @@
   function fetchLiveData() {
     var url = API_URL + '?email=' + encodeURIComponent(USER_EMAIL);
     fetch(url)
-      .then(function(res){return res.json();})
+      .then(function(res){ return res.json(); })
       .then(function(data){
-        if(data.error){console.warn('API error:',data.error);loadFromLocalSettings();return;}
+        if(data.error){ console.warn('API error:',data.error); loadFromLocalSettings(); return; }
         applyLiveData(data);
       })
-      .catch(function(err){console.warn('Fetch failed:',err);loadFromLocalSettings();});
+      .catch(function(err){ console.warn('Fetch failed:',err); loadFromLocalSettings(); });
   }
 
   function applyLiveData(d) {
     if(d.firstName) document.getElementById('user-name').textContent = d.firstName;
-    document.getElementById('stat-sessions').textContent = d.totalSessions||0;
-    document.getElementById('stat-sets').textContent     = d.totalSets||0;
-    document.getElementById('stat-minutes').textContent  = d.workoutMinutes||0;
-    document.getElementById('stat-streak').textContent   = d.streak||0;
+    document.getElementById('stat-sessions').textContent = d.totalSessions || 0;
+    document.getElementById('stat-sets').textContent     = d.totalSets     || 0;
+    document.getElementById('stat-minutes').textContent  = d.workoutMinutes|| 0;
+    document.getElementById('stat-streak').textContent   = d.streak        || 0;
     if(d.programName)   document.getElementById('prog-name').value  = d.programName;
     if(d.startDate)     document.getElementById('start-date').value = d.startDate;
     if(d.durationWeeks) document.getElementById('duration').value   = d.durationWeeks;
     updateProgress();
-    if(d.habitGrid&&d.habitGrid.length===7) renderHabitDots(d.habitGrid);
-    if(d.muscleBalance&&d.muscleBalance.length) renderMuscleBalance(d.muscleBalance);
+    if(d.habitGrid && d.habitGrid.length===7) renderHabitDots(d.habitGrid);
+    if(d.muscleBalance && d.muscleBalance.length) renderMuscleBalance(d.muscleBalance);
     if(d.dailyQuote){
-      document.getElementById('daily-quote').textContent='"'+d.dailyQuote+'"';
-      document.getElementById('live-indicator').style.display='inline-block';
+      document.getElementById('daily-quote').textContent = '"'+d.dailyQuote+'"';
+      document.getElementById('live-indicator').style.display = 'inline-block';
     }
   }
 
-  var DAY_LABELS=['S','M','T','W','T','F','S'];
+  var DAY_LABELS = ['S','M','T','W','T','F','S'];
 
   function renderHabitDots(grid) {
-    var container=document.getElementById('habit-dots');
-    container.innerHTML='';
-    var dow=today.getDay();
+    var c = document.getElementById('habit-dots'); c.innerHTML = '';
+    var dow = today.getDay();
     DAY_LABELS.forEach(function(label,i){
-      var dot=document.createElement('div');
-      var cls=i===dow?(grid[i]?'dot-active':'dot-today'):i<dow?(grid[i]?'dot-active':'dot-missed'):'dot-inactive';
-      dot.className='habit-dot '+cls;
-      dot.textContent=label;
-      container.appendChild(dot);
+      var dot = document.createElement('div');
+      dot.className = 'habit-dot ' + (i===dow ? (grid[i]?'dot-active':'dot-today') : i<dow ? (grid[i]?'dot-active':'dot-missed') : 'dot-inactive');
+      dot.textContent = label;
+      c.appendChild(dot);
     });
   }
 
   function renderMuscleBalance(groups) {
-    var container=document.getElementById('muscle-section');
-    container.innerHTML='';
+    var c = document.getElementById('muscle-section'); c.innerHTML = '';
     if(!groups||!groups.length){
-      ['Push','Pull','Core'].forEach(function(n){container.appendChild(buildMuscleRow(n,0,'#2a2a2a'));});
+      ['Push','Pull','Core'].forEach(function(n){ c.appendChild(buildMuscleRow(n,0,'#2a2a2a')); });
       return;
     }
-    groups.forEach(function(g){container.appendChild(buildMuscleRow(g.name,g.pct,MUSCLE_COLORS[g.name]||'#2ECC71'));});
+    groups.forEach(function(g){ c.appendChild(buildMuscleRow(g.name,g.pct,MUSCLE_COLORS[g.name]||'#2ECC71')); });
   }
 
   function buildMuscleRow(name,pct,color) {
-    var row=document.createElement('div');
-    row.className='muscle-row';
-    row.innerHTML='<span class="muscle-name">'+name+'</span>'+
+    var row = document.createElement('div'); row.className = 'muscle-row';
+    row.innerHTML = '<span class="muscle-name">'+name+'</span>'+
       '<div class="muscle-bar-bg"><div class="muscle-bar-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
       '<span class="muscle-pct">'+(pct?pct+'%':'—')+'</span>';
     return row;
   }
 
   function updateProgress() {
-    var startVal=document.getElementById('start-date').value;
-    var dur=parseInt(document.getElementById('duration').value)||8;
-    if(!startVal)return;
-    var start=new Date(startVal);
-    var diffDays=Math.floor((today-start)/86400000);
-    var week=Math.max(1,Math.floor(diffDays/7)+1);
-    var pct=Math.min(100,Math.round((diffDays/(dur*7))*1000)/10);
-    document.getElementById('week-badge-text').textContent='Week '+Math.min(week,dur)+' of '+dur;
-    document.getElementById('prog-pct').textContent=pct+'%';
-    document.getElementById('prog-fill').style.width=pct+'%';
+    var startVal = document.getElementById('start-date').value;
+    var dur = parseInt(document.getElementById('duration').value)||8;
+    if(!startVal) return;
+    var start    = new Date(startVal);
+    var diffDays = Math.floor((today-start)/86400000);
+    var week     = Math.max(1,Math.floor(diffDays/7)+1);
+    var pct      = Math.min(100,Math.round((diffDays/(dur*7))*1000)/10);
+    document.getElementById('week-badge-text').textContent = 'Week '+Math.min(week,dur)+' of '+dur;
+    document.getElementById('prog-pct').textContent  = pct+'%';
+    document.getElementById('prog-fill').style.width = pct+'%';
   }
 
-  var STATIC_QUOTES=["Train hard, recover harder.","Your body can do it. It's your mind you have to convince.","The only bad workout is the one that didn't
+  var STATIC_QUOTES = ["Train hard, recover harder.","Your body can do it. It's your mind you have to convince.","The only bad workout is the one that didn't
   happen.","Push yourself because no one else is going to do it for you.","Sore today, strong tomorrow.","Your health is an investment, not an expense.","Don't
   wish for it. Work for it.","The pain you feel today is the strength you feel tomorrow.","Fall in love with taking care of yourself.","One workout at a time. One
   day at a time."];
 
   function loadFromLocalSettings() {
-    var saved=JSON.parse(localStorage.getItem('reprise_settings')||'{}');
-    if(saved.programName) document.getElementById('prog-name').value=saved.programName;
-    if(saved.startDate)   document.getElementById('start-date').value=saved.startDate;
-    if(saved.duration)    document.getElementById('duration').value=saved.duration;
+    var saved = JSON.parse(localStorage.getItem('reprise_settings')||'{}');
+    if(saved.programName) document.getElementById('prog-name').value  = saved.programName;
+    if(saved.startDate)   document.getElementById('start-date').value = saved.startDate;
+    if(saved.duration)    document.getElementById('duration').value   = saved.duration;
     updateProgress();
     renderHabitDots([false,false,false,false,false,false,false]);
-    document.getElementById('daily-quote').textContent='"'+STATIC_QUOTES[today.getDate()%STATIC_QUOTES.length]+'"';
+    document.getElementById('daily-quote').textContent = '"'+STATIC_QUOTES[today.getDate()%STATIC_QUOTES.length]+'"';
   }
 
   function saveSettings() {
-    var s={programName:document.getElementById('prog-name').value,startDate:document.getElementById('start-date').value,duration:document.getElementById('duration'
-  ).value};
+    var s = {programName:document.getElementById('prog-name').value,startDate:document.getElementById('start-date').value,duration:document.getElementById('duratio
+  n').value};
     localStorage.setItem('reprise_settings',JSON.stringify(s));
     updateProgress();
     alert('Settings saved locally.\n\nTo sync permanently, update the USERS tab in your RepRise Google Sheet.');
