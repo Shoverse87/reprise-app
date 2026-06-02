@@ -71,7 +71,7 @@ body{background:#141414;font-family:system-ui,sans-serif;color:#fff;padding:20px
   <div class="app-name">RepRise</div>
 </div>
 
-<div class="greeting">Good <span id="time-greeting">morning</span>, <span id="user-name">Shoeb</span></div>
+<div class="greeting">Good <span id="time-greeting">morning</span>, <span id="user-name">there</span></div>
 <div class="date-text" id="today-date"></div>
 <div class="status-bar" id="status-bar">Connecting to live data…</div>
 
@@ -142,6 +142,10 @@ body{background:#141414;font-family:system-ui,sans-serif;color:#fff;padding:20px
 <div class="settings-section">
   <div class="settings-title">Program settings</div>
   <div class="field-full field">
+    <label>Your email</label>
+    <input type="email" id="user-email" placeholder="you@example.com">
+  </div>
+  <div class="field-full field">
     <label>Program name</label>
     <input type="text" id="prog-name" placeholder="e.g. Summer Shred 2026">
   </div>
@@ -160,8 +164,15 @@ body{background:#141414;font-family:system-ui,sans-serif;color:#fff;padding:20px
 
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────────────
-var API_URL    = 'https://script.google.com/macros/s/AKfycbz3J67IXslO3pHvj6bZvsmLWefe95w9PZLncJ4pEtAU3O6NwEEMYOeQdCX0OXRSB8E/exec';
-var USER_EMAIL = 'khan.shoeb76@gmail.com';
+var API_URL = 'https://script.google.com/macros/s/AKfycbz3J67IXslO3pHvj6bZvsmLWefe95w9PZLncJ4pEtAU3O6NwEEMYOeQdCX0OXRSB8E/exec';
+
+// Resolve user email: URL param → localStorage → empty
+var USER_EMAIL = (function() {
+  var params = new URLSearchParams(window.location.search);
+  var fromUrl = params.get('email') || '';
+  if (fromUrl) { localStorage.setItem('reprise_email', fromUrl); return fromUrl; }
+  return localStorage.getItem('reprise_email') || '';
+})();
 
 var MUSCLE_COLORS = {
   'Push':'#2ECC71','Pull':'#27AE60','Legs':'#3498DB','Core':'#F39C12',
@@ -308,13 +319,22 @@ function updateProgress() {
 }
 
 function saveSettings() {
+  var emailInput = document.getElementById('user-email').value.trim();
+  if (emailInput) {
+    USER_EMAIL = emailInput;
+    localStorage.setItem('reprise_email', emailInput);
+  }
   localStorage.setItem('reprise_settings', JSON.stringify({
     programName: document.getElementById('prog-name').value,
     startDate:   document.getElementById('start-date').value,
     duration:    document.getElementById('duration').value
   }));
   updateProgress();
-  alert('Settings saved locally.\n\nTo sync permanently, update the USERS tab in your RepRise Google Sheet.');
+  if (USER_EMAIL) {
+    fetchLiveData();
+  } else {
+    alert('Please enter your email to load live data.');
+  }
 }
 
 // ─── TIMER ────────────────────────────────────────────────────────────────────
@@ -379,7 +399,12 @@ function playDoneBeep() {
 }
 
 // ─── START ────────────────────────────────────────────────────────────────────
-fetchLiveData();
+if (USER_EMAIL) {
+  document.getElementById('user-email').value = USER_EMAIL;
+  fetchLiveData();
+} else {
+  setStatus('Enter your email in settings to load live data', false);
+}
 </script>
 </body>
 </html>
